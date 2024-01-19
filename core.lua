@@ -43,7 +43,10 @@ media:Register("sound", "BugSack: Fatality", "Interface\\AddOns\\"..addonName.."
 local onError
 do
 	local lastError = nil
-	function onError()
+	function onError(_, e)
+		if e and e.message and addon.db.filterExpression ~= "" and string.find(e.message, addon.db.filterExpression) then
+			return
+		end
 		if not lastError or GetTime() > (lastError + 2) then
 			if not addon.db.mute then
 				local sound = media:Fetch("sound", addon.db.soundMedia)
@@ -124,6 +127,7 @@ do
 		if type(sv.fontSize) ~= "string" then sv.fontSize = "GameFontHighlight" end
 		if type(sv.altwipe) ~= "boolean" then sv.altwipe = false end
 		if type(sv.useMaster) ~= "boolean" then sv.useMaster = false end
+		if type(sv.filterExpression) ~= "string" then sv.filterExpression = "" end
 		addon.db = sv
 
 		-- Make sure we grab any errors fired before bugsack loaded.
